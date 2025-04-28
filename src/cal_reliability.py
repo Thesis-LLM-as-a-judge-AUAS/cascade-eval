@@ -68,10 +68,16 @@ def get_single_evaluation(
         input_ids=torch.as_tensor(input_ids),
         labels=output_ids,
         output_hidden_states=True,
+        output_attentions=True,
     )
     # the predict ids should be shifted left
     shifted_input_ids = torch.roll(input_ids, shifts=-1)
     logprobs = torch.nn.functional.log_softmax(outputs["logits"], dim=-1)
+
+    logprobs_variance = torch.var(logprobs, dim=-1)
+    logprobs_variance[output_ids == -100] = 0  # instruction masking
+    # averaged on target length
+    evaluation_var = logprobs_variance.sum(-1)[0] / target_len
 
     logprobs[output_ids == -100] = 0  # instruction masking
     # The original entropy has a minus sign, but we remove it to keep the positive correlation
@@ -79,7 +85,10 @@ def get_single_evaluation(
     # averaged on target length
     evaluation_ent = logprobs_entropy.sum(-1)[0] / target_len
 
-    return {"entropy": evaluation_ent}
+    evaluation_logit = torch.gather(logprobs, dim=-1, index=shifted_input_ids.unsqueeze(-1)).squeeze(-1)
+    evaluation_logit = evaluation_logit.sum(-1)[0] / target_len
+
+    return {"logit": evaluation_logit, "entropy": evaluation_ent, "variance": evaluation_var}
 
 if __name__ == "__main__":
     parser = build_params()
@@ -193,6 +202,7 @@ if __name__ == "__main__":
                 prefix_lens[i],
                 target_lens[i],
             )
+
             entropy = evaluation["entropy"]
             variance = evaluation["variance"]
             # 将结果添加到字典中

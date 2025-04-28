@@ -1,17 +1,16 @@
-import json
 import argparse
+import json
+import multiprocessing
+import os
 import random
 import time
-import json
-import openai
-import os
-import re
-import requests
-import multiprocessing
 from functools import partial
 
-from evaluate_judge import build_dataset, calculate_metrics
+import openai
+from dotenv import load_dotenv
+
 from build_prompt_gpt import parse_score_gpt, create_prompt_gpt
+from evaluate_judge import build_dataset, calculate_metrics
 
 
 def build_params_gpt():
@@ -112,10 +111,12 @@ def build_params_gpt():
 #             continue
 #     return res
 
+load_dotenv(".env")
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 def request_gpt(prompt, model, temperature, max_new_tokens):
-    model = "gpt-4o-0513"
-    api_key = "f84283ab79d26d15be359b6d6979308a"
-    client = openai.OpenAI(api_key=api_key, base_url="https://idealab.alibaba-inc.com/api/openai/v1")
+    client = openai.OpenAI(api_key=OPENAI_API_KEY)
     payload = {
         "model": model,
         "messages": [

@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0
 
-MODEL_TYPE="auto-j"
-DATA_TYPE="auto-j"
+MODEL_TYPE="judgelm"
+DATA_TYPE="salad-bench"
 
 python3 -u src/cascaded_eval.py \
     --data-type $DATA_TYPE \
