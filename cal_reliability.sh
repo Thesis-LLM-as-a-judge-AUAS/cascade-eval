@@ -1,8 +1,8 @@
 export CUDA_VISIBLE_DEVICES=0
 
-MODEL_PATH=./models/JudgeLM-7B
-BASE_MODEL_PATH=./models/vicuna-7b
-MODEL_TYPE=judgelm
+MODEL_PATH=./models/autoj-13b
+BASE_MODEL_PATH=./models/llama-2-13b
+MODEL_TYPE=autoj
 DATA_TYPE=pandalm
 
 python3 -u src/cal_reliability.py \
