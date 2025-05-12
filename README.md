@@ -1,15 +1,20 @@
 # Unlimited Judge
 
-This is the official repository for paper **An Empirical Study of LLM-as-a-Judge for LLM Evaluation: Fine-tuned Judge Model is not a General Substitute for GPT-4**.
+This is the official repository for paper **An Empirical Study of LLM-as-a-Judge for LLM Evaluation: Fine-tuned Judge
+Model is not a General Substitute for GPT-4**.
 
 ## ⚡️ Usage
+
 ### Preparation
+
 Please refer to the following command to prepare your environment.
 
 ```shell
 pip install -r requirements.txt
 ```
-Please download pre-trained LLMs and put them under ``models``. Specifically, our study are based on the following four finetuned models:
+
+Please download pre-trained LLMs and put them under ``models``. Specifically, our study are based on the following four
+finetuned models:
 
 * [JudgeLM-7B](https://huggingface.co/BAAI/JudgeLM-7B-v1.0)
 
@@ -19,7 +24,8 @@ Please download pre-trained LLMs and put them under ``models``. Specifically, ou
 
 * [Auto-J-13b](https://huggingface.co/GAIR/autoj-13b)
 
-To obtain the calibrated reliability scores, or to finetune your own judge model for comparison, you also need to download the following base models:
+To obtain the calibrated reliability scores, or to finetune your own judge model for comparison, you also need to
+download the following base models:
 
 * [Vicuna-7B](https://huggingface.co/lmsys/vicuna-7b-v1.3)
 
@@ -29,7 +35,7 @@ To obtain the calibrated reliability scores, or to finetune your own judge model
 
 * [Llama2-chat-13B](https://huggingface.co/meta-llama/Llama-2-13b-chat-hf)
 
-Our study are based on the following data, and we have downloaded the respective testsets and put them under ``data``. 
+Our study are based on the following data, and we have downloaded the respective testsets and put them under ``data``.
 
 * [JudgeLM-test](https://huggingface.co/datasets/BAAI/JudgeLM-100K/)
 
@@ -82,6 +88,7 @@ python3 -u src/evaluate_gpt.py \
 ```
 
 ## Fine-tune your own judge model
+
 You can train your own judge based on open-source judge data and foundation models.
 
 We support different architecutes: LLaMA, DeBERTa
@@ -136,8 +143,8 @@ python -u src/evaluate_finetuned.py \
     --class-type $CLASS_TYPE
 ```
 
-
 ## Integrated evaluate with *CascadedEval*
+
 Run the following script to obtain the confidence scores.
 
 ```shell
@@ -157,7 +164,8 @@ python3 -u src/cal_reliability.py \
 
 ```
 
-After that, you can run the following script to perform *CascadedEval*, by allocating the less confident samples to GPT-4 for re-evaluation.
+After that, you can run the following script to perform *CascadedEval*, by allocating the less confident samples to
+GPT-4 for re-evaluation.
 
 ```shell
 MODEL_TYPE="judgelm"
@@ -169,7 +177,8 @@ python3 -u src/cascaded_eval.py \
     --logit-file-gpt "outputs/${DATA_TYPE}-gpt-4-turbo-128k-vanilla.jsonl"
 ```
 
-You can also run the following script to evaluate the effectiveness of the scores, by bucketing the testset according to the score:
+You can also run the following script to evaluate the effectiveness of the scores, by bucketing the testset according to
+the score:
 
 ```shell
 MODEL_TYPE=judgelm
@@ -180,3 +189,78 @@ python3 -u src/evaluate_reliability.py \
     --logit-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}-logit.jsonl" \
     --output-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}-relia.json"
 ```
+
+# Sanity check results
+
+Only two datasets to test: **SALAD-Bench** and **PandaLM**
+
+The following presets:
+
+- **gpt-4-turbo-2024-04-09**,
+- **judgelm** (with vicuna-13b as the parent model),
+- **auto-j** (with mistral-7b as the parent model),
+- judgelm + CascadeEval,
+- auto-j + CascadeEval
+
+The following metrics:
+
+- accuracy
+- f1-score
+
+## Initial results (with ratio == 0.5):
+
+![Initial results](./img/initial-results.png)
+
+## Gained results
+
+<table>
+  <tr>
+    <th>Model</th>
+    <th colspan="2">SALAD-Bench</th>
+    <th colspan="2">PandaLM</th>
+  </tr>
+  <tr>
+    <td></td>
+    <th>accuracy</th>
+    <th>f1</th>
+    <th>accuracy</th>
+    <th>f1</th>
+  </tr>
+  <tr>
+    <td>gpt-4-turbo-2024-04-09</td>
+    <td>0.961</td>
+    <td>0.647</td>
+    <td>0.76</td>
+    <td>0.709</td>
+  </tr>
+  <tr>
+    <td>JudgeLM</td>
+    <td>0.829</td>
+    <td>0.576</td>
+    <td>0.689</td>
+    <td>0.657</td>
+  </tr>
+  <tr>
+    <td>JudgeLM + CascadeEval</td>
+    <td>0.947</td>
+    <td>0.637</td>
+    <td>0.734</td>
+    <td>0.682</td>
+  </tr>
+  <tr>
+    <td>Auto-J</td>
+    <td>0.892</td>
+    <td>0.592</td>
+    <td>0.719</td>
+    <td>0.635</td>
+  </tr>
+  <tr>
+    <td>Auto-J + CascadeEval</td>
+    <td>0.934</td>
+    <td>0.626</td>
+    <td>0.756</td>
+    <td>0.697</td>
+  </tr>
+</table>
+
+We used different GPT-4 version!

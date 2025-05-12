@@ -101,7 +101,7 @@ def compute_accuracy_rate_weak_strong(relia_scores1, judge_output1, judge_output
             judge_outputs.append(output1)
             judge_answers.append(answer)
         else:
-            judge_outputs.append(output1)
+            judge_outputs.append(output2)
             judge_answers.append(answer)
 
     accuracy_rate = calculate_metrics(judge_answers, judge_outputs, dataset_type)
