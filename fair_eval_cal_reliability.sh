@@ -16,10 +16,4 @@ for i in $(seq 1 47); do
       --logit-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-logit.jsonl" \
       --output-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-relia.json"
 
-  python -u src/evaluate_reliability.py \
-      --model-type ${MODEL_TYPE} \
-      --data-type $DATA_TYPE \
-      --logit-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-logit.jsonl" \
-      --output-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-relia.json"
-
 done
