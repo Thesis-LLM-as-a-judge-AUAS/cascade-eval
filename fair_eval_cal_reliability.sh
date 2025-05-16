@@ -1,8 +1,8 @@
 export CUDA_VISIBLE_DEVICES=0
 
-MODEL_PATH=./models/autoj-13b
-BASE_MODEL_PATH=./models/Mistral-7B
-MODEL_TYPE=auto-j
+MODEL_PATH=./models/judgelm-7b
+BASE_MODEL_PATH=./models/vicuna-7b
+MODEL_TYPE=judgelm
 DATA_TYPE=vicuna
 
 

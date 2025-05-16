@@ -1,6 +1,6 @@
 export CUDA_VISIBLE_DEVICES=0
 
-MODEL_TYPE="auto-j"
+MODEL_TYPE="judgelm"
 DATA_TYPE="vicuna"
 
 for i in $(seq 1 47); do
