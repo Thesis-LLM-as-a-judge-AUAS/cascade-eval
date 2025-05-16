@@ -106,7 +106,7 @@ if __name__ == "__main__":
         dataset = build_icl(args.data_type, args.data_path, args.model_type, dataset, pos_num=1, neg_num=1, tie_num=0)
 
     prompts = []
-    answers = []
+    # answers = []
     for index, example in enumerate(dataset):
         if args.model_type in ["judgelm", "pandalm", "auto-j", "llama-3"]:
             if args.data_type in ["prometheus-ind", "prometheus-ood", "toxic-chat", "halu-eval-summary", "halu-eval-dialogue", "halu-eval-qa"]:
@@ -138,7 +138,7 @@ if __name__ == "__main__":
                 prompts.append(prompt_a)
                 prompts.append(prompt_b)
 
-        answers.append(example["score"])
+        # answers.append(example["score"])
 
     print("Prompt built finished! Sampled prompt:")
     print(prompts[random.randint(0, len(prompts)-1)]+"\n")
@@ -155,8 +155,8 @@ if __name__ == "__main__":
             for pred in pred_scores:
                 fout.write(json.dumps(pred)+"\n")
 
-    metrics_dicts = calculate_metrics(answers, pred_scores, args.data_type)
-    print("**********************************************")
-    print(f"Model: {args.model_type}, Data: {args.data_type}, Prompt: {args.prompt_type}")
-    print(metrics_dicts)
-    print("**********************************************")
+    # metrics_dicts = calculate_metrics(answers, pred_scores, args.data_type)
+    # print("**********************************************")
+    # print(f"Model: {args.model_type}, Data: {args.data_type}, Prompt: {args.prompt_type}")
+    # print(metrics_dicts)
+    # print("**********************************************")
