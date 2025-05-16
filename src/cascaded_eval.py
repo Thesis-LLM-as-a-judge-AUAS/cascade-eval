@@ -1,8 +1,9 @@
 import json
-import numpy as np
 import random
-import argparse
-from evaluate_judge import calculate_metrics, build_dataset, build_params
+
+import numpy as np
+
+from evaluate_judge import calculate_metrics, build_params
 
 
 def load_results(file_path):
@@ -76,7 +77,7 @@ def compute_accuracy_rate_weak_weak(relia_scores1, relia_scores2, judge_output1,
 
     return accuracy_rate
 
-def compute_accuracy_rate_weak_strong(relia_scores1, judge_output1, judge_output_gpt, answers, dataset_type, ratio):
+def compute_accuracy_rate_weak_strong(relia_scores1, judge_output1, judge_output_gpt, dataset_type, final_output_path, ratio):
 
     def get_top_half_indices(relia_scores, dataset_type, ratio=0.9):
         sorted_indices = np.argsort(-np.array(relia_scores))
@@ -95,18 +96,21 @@ def compute_accuracy_rate_weak_strong(relia_scores1, judge_output1, judge_output
     top_half_indice1 = set(get_top_half_indices(relia_scores1, dataset_type, ratio))
     
     judge_outputs = []
-    judge_answers = []
-    for i, output1, output2, answer in zip(np.arange(len(judge_output1)).tolist(), judge_output1, judge_output_gpt, answers):
+    # judge_answers = []
+    for i, output1, output2 in zip(np.arange(len(judge_output1)).tolist(), judge_output1, judge_output_gpt):
         if i in top_half_indice1:
             judge_outputs.append(output1)
-            judge_answers.append(answer)
+            # judge_answers.append(answer)
         else:
             judge_outputs.append(output2)
-            judge_answers.append(answer)
+            # judge_answers.append(answer)
 
-    accuracy_rate = calculate_metrics(judge_answers, judge_outputs, dataset_type)
+    with open(final_output_path, 'w', encoding='utf-8') as f:
+        json.dump(judge_outputs, f, ensure_ascii=False, indent=4)
 
-    print(f"Ratio: {ratio}, Accuracy Rate: {accuracy_rate}")
+    # accuracy_rate = calculate_metrics(judge_answers, judge_outputs, dataset_type)
+
+    # print(f"Ratio: {ratio}, Accuracy Rate: {accuracy_rate}")
     # print(round(accuracy_rate["accuracy"], 4))
 
 
@@ -121,34 +125,21 @@ def main():
     parser.add_argument("--output-file2", type=str, default=None)
     parser.add_argument("--logit-file2", type=str, default=None)
     parser.add_argument("--logit-file-gpt", type=str, default=None)
+    parser.add_argument("--final-output-file", type=str, default=None)
     args = parser.parse_args()
 
-    dataset = build_dataset(args.data_type, "./data")
-    answers = [example["score"] for example in dataset]
+    # dataset = build_dataset(args.data_type, "./data")
+    # answers = [example["score"] for example in dataset]
 
     relia_scores1 = load_results(args.output_file1)["Entropy"]
 
     with open(args.logit_file1, 'r') as f:
         judge_output1 = [json.loads(line.strip()) for line in f.readlines()]
 
-    if args.output_file2 is not None:
-        relia_scores2 = load_results(args.output_file2)["Entropy"]
-
-        with open(args.logit_file2, 'r') as f:
-            judge_output2 = [json.loads(line.strip()) for line in f.readlines()]
-
-        # 计算指标的准确率
-        accuracy_rate = compute_accuracy_rate_weak_weak(relia_scores1, relia_scores2, judge_output1, judge_output2, answers, args.data_type)
-    
-    else:
-        with open(args.logit_file_gpt, 'r') as f:
-            judge_output_gpt = [json.loads(line.strip())["score"] for line in f.readlines()]
+    with open(args.logit_file_gpt, 'r') as f:
+        judge_output_gpt = [json.loads(line.strip())["score"] for line in f.readlines()]
         
-        compute_accuracy_rate_weak_strong(relia_scores1, judge_output1, judge_output_gpt, answers, args.data_type, ratio=0.5)
-
-        # for ratio in np.arange(1.0, -0.1, -0.1):
-        #     ratio = round(ratio, 1)
-        #     accuracy_rate = compute_accuracy_rate_weak_strong(relia_scores1, judge_output1, judge_output_gpt, answers, args.data_type, ratio=ratio)
+    compute_accuracy_rate_weak_strong(relia_scores1, judge_output1, judge_output_gpt, args.data_type, args.final_output_file, ratio=0.5)
 
 
 if __name__ == "__main__":
