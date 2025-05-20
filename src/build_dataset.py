@@ -46,6 +46,22 @@ def build_dataset(data_type, data_path="./data"):
 
         dataset = new_dataset
 
+    elif data_type == "vicuna-mec":
+        with open(os.path.join(data_path, "vicuna/mec-bpc-vicuna.json"), "r", encoding="utf-8") as fin:
+            dataset = json.load(fin)
+
+        new_dataset = []
+        for line in dataset:
+            example = {
+                'question_body': line['question_text'],
+                'answer1_body': line['text_gpt'],
+                'answer2_body': line['text_vicuna']
+            }
+
+            new_dataset.append(example)
+
+        dataset = new_dataset
+
 
     elif data_type == "pandalm":
         with open(os.path.join(data_path, "pandalm/testset-v1.json"), "r") as fin:
