@@ -137,8 +137,6 @@ def main():
         judge_output1 = [json.loads(line.strip()) for line in f.readlines()]
 
     with open(args.logit_file_gpt, 'r') as f:
-        data = [json.loads(line.strip()) for line in f.readlines()]
-        print(data)
         judge_output_gpt = [json.loads(line.strip())["score"] for line in f.readlines()]
         
     compute_accuracy_rate_weak_strong(relia_scores1, judge_output1, judge_output_gpt, args.data_type, args.final_output_file, ratio=0.5)
