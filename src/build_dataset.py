@@ -30,8 +30,15 @@ def build_dataset(data_type, data_path="./data"):
 
         dataset = new_dataset
 
-    elif data_type == "vicuna":
-        with open(os.path.join(data_path, "vicuna/vanilla-vicuna.json"), "r", encoding="utf-8") as fin:
+    elif data_type in ['vicuna', 'vicuna-mec', 'vicuna-gpt4', 'vicuna-mec-gpt4']:
+        data_type_to_path = {
+            'vicuna': 'vicuna/vanilla-vicuna.json',
+            'vicuna-mec': 'vicuna/mec-bpc-vicuna.json',
+            'vicuna-gpt4': 'vicuna/vanilla-vicuna-gpt4.json',
+            'vicuna-mec-gpt4': 'vicuna/mec-bpc-vicuna-gpt4.json',
+        }
+
+        with open(os.path.join(data_path, data_type_to_path[data_type]), "r", encoding="utf-8") as fin:
             dataset = json.load(fin)
 
         new_dataset = []
@@ -45,23 +52,6 @@ def build_dataset(data_type, data_path="./data"):
             new_dataset.append(example)
 
         dataset = new_dataset
-
-    elif data_type == "vicuna-mec":
-        with open(os.path.join(data_path, "vicuna/mec-bpc-vicuna.json"), "r", encoding="utf-8") as fin:
-            dataset = json.load(fin)
-
-        new_dataset = []
-        for line in dataset:
-            example = {
-                'question_body': line['question_text'],
-                'answer1_body': line['text_gpt'],
-                'answer2_body': line['text_vicuna']
-            }
-
-            new_dataset.append(example)
-
-        dataset = new_dataset
-
 
     elif data_type == "pandalm":
         with open(os.path.join(data_path, "pandalm/testset-v1.json"), "r") as fin:

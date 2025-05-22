@@ -3,7 +3,7 @@ export CUDA_VISIBLE_DEVICES=0
 MODEL_PATH=./models/judgelm-7b
 BASE_MODEL_PATH=./models/vicuna-7b
 MODEL_TYPE=judgelm
-DATA_TYPE=vicuna-mec
+DATA_TYPE=vicuna-gpt4
 
 
 for i in $(seq 1 47); do
