@@ -1,4 +1,6 @@
 import random
+import re
+
 
 def create_prompt(model_type, data_type):
     if model_type == "judgelm":
@@ -62,7 +64,7 @@ Please rate the helpfulness, relevance, accuracy, level of details of their resp
 Please first output a single line containing only two values indicating the scores for Assistant 1 and 2, respectively. The two scores are separated by a space. In the subsequent line, please provide a comprehensive explanation of your evaluation, avoiding any potential bias and ensuring that the order in which the responses were presented does not affect your judgment.
 
 ### Response:"""
-            
+
     elif model_type == "pandalm":
         if "prometheus" in data_type:
             instruction = """Below are a response for a given task. The task is defined by the Instruction. Evaluate the response with an overall score on a scale of 1 to 5 and generate a reference answer for the task.
@@ -75,7 +77,7 @@ Please first output a single line containing only two values indicating the scor
 
 ### Evaluation:\n"""
 
-        else: 
+        else:
             instruction = """Below are two responses for a given task. The task is defined by the Instruction. Evaluate the responses and generate a reference answer for the task.
 
 ### Instruction:
@@ -146,7 +148,7 @@ Write critiques for this response. After that, you should give a final rating fo
 [END DATA]
 
 Write critiques for this response. After that, you should give a final rating for the response on a scale of 1 to 10 by strictly following this format: "[[rating]]", for example: "Rating: [[5]]". [/INST]"""
-        
+
         else:
             instruction = """You are a helpful and precise assistant for checking the quality of the answer.
 [Question]
@@ -194,6 +196,7 @@ An instruction (might include an Input inside it), a response to evaluate, and a
 
     return instruction
 
+
 def create_prompt_cot(model_type, data_type):
     assert data_type in ["judgelm", "pandalm"]
     assert model_type in ["judgelm", "pandalm"]
@@ -233,6 +236,7 @@ In the subsequent line, please output a single line containing only two values i
 ### Evaluation:\n"""
 
     return instruction
+
 
 def parse_predictions(predictions, model_type, data_type, prompt_type):
     def parse_score_judgelm(review, is_pair=True):
@@ -284,39 +288,41 @@ def parse_predictions(predictions, model_type, data_type, prompt_type):
                 return 3  # default is middle score
 
     def parse_score_autoj(review, is_pair=True):
-        parse_score_judgelm(review, is_pair)
-        # if is_pair:
-        #     review = review.strip()
-        #     pos = review.rfind('final decision is ')
-        #     if pos != -1:
-        #         pred_rest = review[pos + len('final decision is '):].strip().lower()
-        #         if pred_rest.startswith('response 1'):
-        #             return [1, 0]
-        #         elif pred_rest.startswith('response 2'):
-        #             return [0, 1]
-        #         elif pred_rest.startswith('tie'):
-        #             return [1, 1]
-        #         else:
-        #             if data_type == "salad-bench":
-        #                 return random.choice([[1.0, 0.0], [0.0, 1.0]])  # default is random
-        #             else:
-        #                 return [1.0, 1.0]  # default is Tie
-        #
-        #     else:
-        #         if data_type == "salad-bench":
-        #             return random.choice([[1.0, 0.0], [0.0, 1.0]])  # default is random
-        #         else:
-        #             return [1.0, 1.0]  # default is Tie
-        #
-        # else:
-        #     if "Rating: [[" in review:
-        #         pos = review.rfind("Rating: [[")
-        #         pos2 = review.find("]]", pos)
-        #         assert pos != -1 and pos2 != -1
-        #         return float(review[pos + len("Rating: [["):pos2].strip())
-        #     else:
-        #         return 0.0
+        matches = re.findall(r'Assistant\s+\d:\s*(\d+)', review)
+        return [int(score) for score in matches]
 
+        # if is_pair:
+
+    #     review = review.strip()
+    #     pos = review.rfind('final decision is ')
+    #     if pos != -1:
+    #         pred_rest = review[pos + len('final decision is '):].strip().lower()
+    #         if pred_rest.startswith('response 1'):
+    #             return [1, 0]
+    #         elif pred_rest.startswith('response 2'):
+    #             return [0, 1]
+    #         elif pred_rest.startswith('tie'):
+    #             return [1, 1]
+    #         else:
+    #             if data_type == "salad-bench":
+    #                 return random.choice([[1.0, 0.0], [0.0, 1.0]])  # default is random
+    #             else:
+    #                 return [1.0, 1.0]  # default is Tie
+    #
+    #     else:
+    #         if data_type == "salad-bench":
+    #             return random.choice([[1.0, 0.0], [0.0, 1.0]])  # default is random
+    #         else:
+    #             return [1.0, 1.0]  # default is Tie
+    #
+    # else:
+    #     if "Rating: [[" in review:
+    #         pos = review.rfind("Rating: [[")
+    #         pos2 = review.find("]]", pos)
+    #         assert pos != -1 and pos2 != -1
+    #         return float(review[pos + len("Rating: [["):pos2].strip())
+    #     else:
+    #         return 0.0
 
     def parse_score_prometheus(review, is_pair=False):
         if is_pair:
@@ -329,7 +335,7 @@ def parse_predictions(predictions, model_type, data_type, prompt_type):
 
                 return [float(sp[0]), float(sp[1])]
             except:
-                return [1.0, 1.0] # default is Tie
+                return [1.0, 1.0]  # default is Tie
         else:
             try:
                 score = review.split('[RESULT]')[1].strip()
@@ -347,23 +353,25 @@ def parse_predictions(predictions, model_type, data_type, prompt_type):
         is_pair = "prometheus" not in data_type
         pred_scores = [parse_score_pandalm(pred, is_pair=is_pair) for pred in predictions]
     elif model_type == "auto-j":
-        is_pair = data_type not in ['prometheus-ind', 'prometheus-ood','toxic-chat', 'halu-eval-summary', 'halu-eval-qa', 'halu-eval-dialogue']
+        is_pair = data_type not in ['prometheus-ind', 'prometheus-ood', 'toxic-chat', 'halu-eval-summary',
+                                    'halu-eval-qa', 'halu-eval-dialogue']
         pred_scores = [parse_score_autoj(pred, is_pair=is_pair) for pred in predictions]
     elif model_type == "prometheus":
         pred_scores = [parse_score_prometheus(pred, is_pair=False) for pred in predictions]
-        is_pair = data_type not in ['prometheus-ind', 'prometheus-ood','toxic-chat', 'halu-eval-summary', 'halu-eval-qa', 'halu-eval-dialogue']
+        is_pair = data_type not in ['prometheus-ind', 'prometheus-ood', 'toxic-chat', 'halu-eval-summary',
+                                    'halu-eval-qa', 'halu-eval-dialogue']
         if is_pair:
             predictions_a = [pred for pred in pred_scores[0::2]]
             predictions_b = [pred for pred in pred_scores[1::2]]
             pred_scores = [[pred[0], pred[1]] for pred in zip(predictions_a, predictions_b)]
-    
+
     print("Prediction parsing finished!")
     print("Sampled prediction:")
-    random_idx = random.randint(0, len(predictions)-1)
+    random_idx = random.randint(0, len(predictions) - 1)
     print(predictions[random_idx])
     print(f"Sampled score: {pred_scores[random_idx]}")
     print("Sampled prediction:")
-    random_idx = random.randint(0, len(predictions)-1)
+    random_idx = random.randint(0, len(predictions) - 1)
     print(predictions[random_idx])
     print(f"Sampled score: {pred_scores[random_idx]}")
 
