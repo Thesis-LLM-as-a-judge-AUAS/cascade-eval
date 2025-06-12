@@ -150,26 +150,18 @@ Write critiques for this response. After that, you should give a final rating fo
 Write critiques for this response. After that, you should give a final rating for the response on a scale of 1 to 10 by strictly following this format: "[[rating]]", for example: "Rating: [[5]]". [/INST]"""
 
         else:
-            instruction = """You are a helpful and precise assistant for checking the quality of the answer.
-[Question]
-{question_body}
+            instruction = """We would like to request your feedback on the performance of two AI assistants in response to the user question displayed above.
+    Please rate the helpfulness, relevance, accuracy, level of details of their responses. 
 
-[The Start of Assistant 1's Answer]
-{answer1_body}
+    Each assistant receives an overall score on a scale of 1 to 10, where a higher score indicates better overall performance.
+    Please first provide a comprehensive explanation of your evaluation, avoiding any potential bias and ensuring that the order in which the responses were presented does not affect your judgment. 
+    Then, output two lines indicating the scores for Assistant 1 and 2, respectively.
 
-[The End of Assistant 1's Answer]
-
-[The Start of Assistant 2's Answer]
-{answer2_body}
-
-[The End of Assistant 2's Answer]
-
-[System]
-We would like to request your feedback on the performance of two AI assistants in response to the user question displayed above.
-{rubric} Each assistant receives an overall score on a scale of 1 to 10, where a higher score indicates better overall performance.
-In the first line, please provide a comprehensive explanation of your evaluation, avoiding any potential bias and ensuring that the order in which the responses were presented does not affect your judgment.
-In the subsequent line, please output a single line containing only two values indicating the scores for Assistant 1 and 2, respectively. The two scores are separated by a space. There should be nothing on this line except two scores and a space.
-### Response:"""
+    Output with the following format:
+    Evaluation evidence: <your evaluation explanation here>
+    Score of the Assistant 1: <score>
+    Score of the Assistant 2: <score>
+    """
 
     elif model_type == "prometheus":
         instruction = """[INST] <<SYS>>
@@ -288,8 +280,9 @@ def parse_predictions(predictions, model_type, data_type, prompt_type):
                 return 3  # default is middle score
 
     def parse_score_autoj(review, is_pair=True):
-        matches = re.findall(r'Assistant\s+\d:\s*(\d+)', review)
-        return [int(score) for score in matches]
+        first_score = review.split("\n")[-2].split(":")[-1].strip()
+        second_score = review.split("\n")[-1].split(":")[-1].strip()
+        return [float(first_score), float(second_score)]
 
         # if is_pair:
 

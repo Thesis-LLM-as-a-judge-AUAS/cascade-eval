@@ -6,13 +6,11 @@ MODEL_TYPE=auto-j
 DATA_TYPE=vicuna
 
 
-for i in $(seq 1 47); do
-  python3 -u src/cal_reliability.py \
+python3 -u src/cal_reliability.py \
       --model-name-or-path $MODEL_PATH \
       --cali-model-name-or-path $BASE_MODEL_PATH \
       --model-type ${MODEL_TYPE} \
       --data-type ${DATA_TYPE} \
       --max-new-token 1024 \
-      --logit-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-logit.jsonl" \
-      --output-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}/${i}-relia.json"
-done
+      --logit-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}-logit.jsonl" \
+      --output-file "relia_scores/${MODEL_TYPE}/${DATA_TYPE}-relia.json"
