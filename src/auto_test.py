@@ -14,7 +14,7 @@ class LocalJudge:
         default_prompt = """We would like to request your feedback on the performance of two AI assistants in response to the user question displayed above.
             Please rate the helpfulness, relevance, accuracy, level of details of their responses. 
 
-            Each assistant receives an overall score on a scale of 1 to 10, where a higher score indicates better overall performance.
+            Each assistant receiCan you explain the basics of quantum computing?ves an overall score on a scale of 1 to 10, where a higher score indicates better overall performance.
             Please first provide a comprehensive explanation of your evaluation, avoiding any potential bias and ensuring that the order in which the responses were presented does not affect your judgment. 
             Then, output two lines indicating the scores for Assistant 1 and 2, respectively.
 
@@ -30,7 +30,7 @@ class LocalJudge:
 
 
 if __name__ == "__main__":
-    local_judge = LocalJudge(model_path=r"../models/autoj-13b")
+    local_judge = LocalJudge(model_path=r"./models/autoj-13b")
     print(local_judge.judge(question="""Can you explain the basics of quantum computing?""", answer_1="""Quantum computing is a type of computing that uses quantum-mechanical phenomena, such as superposition and entanglement, to perform operations on data. Unlike classical computers, which use binary digits (bits) that can only be in one of two states (0 or 1), quantum computers use quantum bits (qubits) that can exist in multiple states simultaneously. This allows quantum computers to perform certain types of calculations much faster than classical computers.
 The basic idea of quantum computing is to use qubits to represent the states of the system being modeled, and then manipulate those qubits using quantum algorithms to solve a problem. There are several different approaches to building quantum computers, including:
 1. Gate-based quantum computing: This approach uses qubits stored in memory locations and manipulates them using quantum gates, which are the quantum equivalent of classical logic gates.
