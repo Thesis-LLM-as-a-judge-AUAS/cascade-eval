@@ -160,8 +160,7 @@ Write critiques for this response. After that, you should give a final rating fo
     Output with the following format:
     Evaluation evidence: <your evaluation explanation here>
     Score of the Assistant 1: <score>
-    Score of the Assistant 2: <score>
-    """
+    Score of the Assistant 2: <score>"""
 
     elif model_type == "prometheus":
         instruction = """[INST] <<SYS>>
@@ -280,9 +279,8 @@ def parse_predictions(predictions, model_type, data_type, prompt_type):
                 return 3  # default is middle score
 
     def parse_score_autoj(review, is_pair=True):
-        first_score = review.split("\n")[-2].split(":")[-1].strip()
-        second_score = review.split("\n")[-1].split(":")[-1].strip()
-        return [float(first_score), float(second_score)]
+        matches = re.findall(r'Assistant\s+\d:\s*(\d+)', review)
+        return [int(score) for score in matches]
 
         # if is_pair:
 
