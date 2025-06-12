@@ -22,7 +22,7 @@ class LocalJudge:
             Evaluation evidence: <your evaluation explanation here>
             Score of the Assistant 1: <score>
             Score of the Assistant 2: <score>"""
-        prompt = f"[Question]\n{question}\n\n[The Start of Assistant 1's Answer]\n{answer_1}\n[The End of Assistant 1's Answer]\n\n[The Start of Assistant 2's Answer]\n{answer_2}\n[The End of Assistant 2's Answer]\n\n[System]\n{default_prompt}\n""
+        prompt = f"[Question]\n{question}\n\n[The Start of Assistant 1's Answer]\n{answer_1}\n[The End of Assistant 1's Answer]\n\n[The Start of Assistant 2's Answer]\n{answer_2}\n[The End of Assistant 2's Answer]\n\n[System]\n{default_prompt}\n"
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
         outputs = self.model.generate(**inputs, max_new_tokens=64)
         judgment = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
