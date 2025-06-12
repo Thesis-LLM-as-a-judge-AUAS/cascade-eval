@@ -1,7 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
-
 class LocalJudge:
     def __init__(self, model_path):
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -25,9 +24,7 @@ class LocalJudge:
             Score of the Assistant 2: <score>"""
         prompt = f"[Question]\n{question}\n\n[The Start of Assistant 1's Answer]\n{answer_1}\n[The End of Assistant 1's Answer]\n\n[The Start of Assistant 2's Answer]\n{answer_2}\n[The End of Assistant 2's Answer]\n\n[System]\n{default_prompt}\n"
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
-        outputs = self.model.generate(**inputs, max_new_token=2048,
-                                      temperature=0.1,
-                                      top_p=1.0)
+        outputs = self.model.generate(**inputs, max_new_tokens=2048)
         judgment = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         return judgment
 
@@ -39,8 +36,7 @@ The basic idea of quantum computing is to use qubits to represent the states of 
 1. Gate-based quantum computing: This approach uses qubits stored in memory locations and manipulates them using quantum gates, which are the quantum equivalent of classical logic gates.
 2. Topological quantum computing: This approach uses qubits that are linked by quantum connections, and manipulates them using topological quantum operations.
 3. Adiabatic quantum computing: This approach uses a quantum circuit that evolves gradually over time, and manipulates the qubits using quantum gates at specific points in the evolution.
-While quantum computers are still in the early stages of development, they have the potential to solve certain problems much faster than classical computers, and could have a wide range of applications, including cryptography, simulation, optimization, and machine learning.""",
-                               answer_2="""Certainly! Quantum computing is a type of computing that uses quantum-mechanical phenomena to process information. 
+While quantum computers are still in the early stages of development, they have the potential to solve certain problems much faster than classical computers, and could have a wide range of applications, including cryptography, simulation, optimization, and machine learning.""", answer_2="""Certainly! Quantum computing is a type of computing that uses quantum-mechanical phenomena to process information. 
 
 In classical computing, a bit can exist in one of two states - 0 or 1. In quantum computing, a qubit can exist in a superposition of states, which means it can exist in a combination of 0 and 1 at the same time. This ability to exist in multiple states simultaneously allows for the processing of large amounts of information simultaneously and can significantly speed up certain types of computations.
 
