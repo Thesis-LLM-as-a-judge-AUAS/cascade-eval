@@ -31,7 +31,7 @@ class LocalJudge:
 
 if __name__ == "__main__":
     local_judge = LocalJudge(model_path=r"./models/autoj-13b")
-    print(local_judge.judge(question="""Can you explain the basics of quantum computing?""", answer_1="""Quantum computing is a type of computing that uses quantum-mechanical phenomena, such as superposition and entanglement, to perform operations on data. Unlike classical computers, which use binary digits (bits) that can only be in one of two states (0 or 1), quantum computers use quantum bits (qubits) that can exist in multiple states simultaneously. This allows quantum computers to perform certain types of calculations much faster than classical computers.
+    result = local_judge.judge(question="""Can you explain the basics of quantum computing?""", answer_1="""Quantum computing is a type of computing that uses quantum-mechanical phenomena, such as superposition and entanglement, to perform operations on data. Unlike classical computers, which use binary digits (bits) that can only be in one of two states (0 or 1), quantum computers use quantum bits (qubits) that can exist in multiple states simultaneously. This allows quantum computers to perform certain types of calculations much faster than classical computers.
 The basic idea of quantum computing is to use qubits to represent the states of the system being modeled, and then manipulate those qubits using quantum algorithms to solve a problem. There are several different approaches to building quantum computers, including:
 1. Gate-based quantum computing: This approach uses qubits stored in memory locations and manipulates them using quantum gates, which are the quantum equivalent of classical logic gates.
 2. Topological quantum computing: This approach uses qubits that are linked by quantum connections, and manipulates them using topological quantum operations.
@@ -42,4 +42,7 @@ In classical computing, a bit can exist in one of two states - 0 or 1. In quantu
 
 Quantum computers use a series of quantum gates - which are similar to the logic gates used in classical computers - to manipulate the state of the qubits, allowing for the computations to be completed. There are several different technologies used to build quantum computers, including superconducting quantum processors, trapped-ion quantum processors, and photonic quantum processors.
 
-One of the most important applications of quantum computing is in solving problems that are intractable for classical computers. For example, quantum computers can be used to factor large numbers, which is the basis for many encryption protocols - leading to exciting possibilities in code-breaking, cryptography, and cybersecurity in the future."""))
+One of the most important applications of quantum computing is in solving problems that are intractable for classical computers. For example, quantum computers can be used to factor large numbers, which is the basis for many encryption protocols - leading to exciting possibilities in code-breaking, cryptography, and cybersecurity in the future.""")
+
+    with open("output.txt", "w") as f:
+        f.write(result)
