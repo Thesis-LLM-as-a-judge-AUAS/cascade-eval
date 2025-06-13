@@ -149,8 +149,16 @@ if __name__ == "__main__":
 
     print("Prompt built finished! Sampled prompt:")
     print(prompts[random.randint(0, len(prompts)-1)]+"\n")
+
+    with open('./prompts.txt', 'w') as f:
+        for item in prompts:
+            f.write(f"{item}\n")
     
     predictions, prefix_lens, target_lens, output_ids = get_multi_answer(args.model_name_or_path, prompts, args.max_new_token)
+
+    with open('./predictions.txt', 'w') as f:
+        for item in predictions:
+            f.write(f"{item}\n")
 
     gc.collect()
     torch.cuda.empty_cache()
