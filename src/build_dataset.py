@@ -53,6 +53,22 @@ def build_dataset(data_type, data_path="./data"):
 
         dataset = new_dataset
 
+    elif data_type == "verbosity":
+        with open(os.path.join(data_path, "verbosity/judgement_expanded.json"), "r", encoding="utf-8") as fin:
+            dataset = json.load(fin)
+
+        new_dataset = []
+        for line in dataset:
+            example = {
+                'question_body': line['instruction'],
+                'answer1_body': line['answer_1'],
+                'answer2_body': line['answer_2']
+            }
+
+            new_dataset.append(example)
+
+        dataset = new_dataset
+
     elif data_type == "pandalm":
         with open(os.path.join(data_path, "pandalm/testset-v1.json"), "r") as fin:
             lines = json.load(fin)

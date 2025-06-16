@@ -3,7 +3,7 @@ export CUDA_VISIBLE_DEVICES=0
 MODEL_PATH=./models/autoj-13b
 BASE_MODEL_PATH=./models/Mistral-7B-v0.1
 MODEL_TYPE=auto-j
-DATA_TYPE=vicuna
+DATA_TYPE=verbosity
 
 
 python3 -u src/cal_reliability.py \
